@@ -14,7 +14,7 @@ def find_captcha(number, offset=1):
     return s
 
 if __name__ == '__main__':
-    filename = "day1_captcha.txt"
+    filename = "day01_captcha.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
