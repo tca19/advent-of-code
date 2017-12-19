@@ -33,7 +33,7 @@ def evenly_divide_rows(lines):
     return s
 
 if __name__ == '__main__':
-    filename = "day2_spreadsheet.txt"
+    filename = "day02_spreadsheet.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
