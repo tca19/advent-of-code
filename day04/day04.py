@@ -21,7 +21,7 @@ def number_valid(passphrases):
     return n_valid_1, n_valid_2
 
 if __name__ == '__main__':
-    filename = "day4_passphrases.txt"
+    filename = "day04_passphrases.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
