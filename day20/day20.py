@@ -1,26 +1,42 @@
 #!/usr/bin/env python3
 
-import os.path
 import re
+import copy
+import os.path
+import itertools
+
+def parse_file(filename):
+    """Parse filename to read infos about particles. Return an array of
+    particles."""
+
+    particles = []
+    with open(filename) as f:
+        for line in f:
+            p, v, a = re.findall("<(.*?)>", line)
+            px, py, pz = list(map(int, p.split(",")))
+            vx, vy, vz = list(map(int, v.split(",")))
+            ax, ay, az = list(map(int, a.split(",")))
+
+            particles.append({
+                "px": px, "py": py, "pz": pz,
+                "vx": vx, "vy": vy, "vz": vz,
+                "ax": ax, "ay": ay, "az": az,
+                })
+
+    return particles
 
 def distance(particle):
+    """Return the mahattan distance between (0,0,0) and particle."""
+
     return abs(particle["px"]) + abs(particle["py"]) + abs(particle["pz"])
 
-def do_stuff(lines):
-    particles = []
-    for line in lines:
-        if len(line) == 0:
-            continue
-        p, v, a = re.findall("<(.*?)>", line)
-        px, py, pz = p.split(",")
-        vx, vy, vz = v.split(",")
-        ax, ay, az = a.split(",")
+def closest_to_origin(particles_, max_steps):
+    """Find the particle closest to origin (0, 0, 0) after a certain number of
+    steps (long term).
+    """
 
-        particles.append({"px": int(px), "py": int(py), "pz": int(pz),
-                          "vx": int(vx), "vy": int(vy), "vz": int(vz),
-                          "ax": int(ax), "ay": int(ay), "az": int(az)})
-
-    for i in range(1000):
+    particles = copy.deepcopy(particles_) # so we don't modify original
+    for step in range(max_steps):
         for particle in particles:
             particle["vx"] += particle["ax"]
             particle["vy"] += particle["ay"]
@@ -29,75 +45,73 @@ def do_stuff(lines):
             particle["py"] += particle["vy"]
             particle["pz"] += particle["vz"]
 
-    closest = 0
-    d = distance(particles[0])
+    closest  = 0
+    min_dist = distance(particles[0])
 
     for i in range(1, len(particles)):
-        u = distance(particles[i])
-        if u < d:
-            closest = i
-            d = u
+        d = distance(particles[i])
+        if d < min_dist:
+            closest  = i
+            min_dist = d
 
     return closest
 
+def n_particles_left(particles_, max_steps):
+    """Return the number of particles that have not collide. Collisions occur
+    when two particles are at the same position at the same step."""
 
-def collisions(lines):
-    particles = []
-    for line in lines:
-        if len(line) == 0:
-            continue
-        p, v, a = re.findall("<(.*?)>", line)
-        px, py, pz = p.split(",")
-        vx, vy, vz = v.split(",")
-        ax, ay, az = a.split(",")
+    particles = copy.deepcopy(particles_) # so we don't modify original
+    n = len(particles)
 
-        particles.append({"px": int(px), "py": int(py), "pz": int(pz),
-                          "vx": int(vx), "vy": int(vy), "vz": int(vz),
-                          "ax": int(ax), "ay": int(ay), "az": int(az)})
+    has_collided  = [False for _ in range(len(particles))]
+    n_destroyed   = 0
 
-    has_collide = [False for _ in range(len(particles))]
-    total_collide = 0
-    for i in range(200):
-        for k in range(len(particles)):
-            if has_collide[k]:
+    for step in range(max_steps):
+        # move every non-destroyed particles
+        for i in range(n):
+            if has_collided[i]:
                 continue
-            particles[k]["vx"] += particles[k]["ax"]
-            particles[k]["vy"] += particles[k]["ay"]
-            particles[k]["vz"] += particles[k]["az"]
-            particles[k]["px"] += particles[k]["vx"]
-            particles[k]["py"] += particles[k]["vy"]
-            particles[k]["pz"] += particles[k]["vz"]
 
+            particles[i]["vx"] += particles[i]["ax"]
+            particles[i]["vy"] += particles[i]["ay"]
+            particles[i]["vz"] += particles[i]["az"]
+            particles[i]["px"] += particles[i]["vx"]
+            particles[i]["py"] += particles[i]["vy"]
+            particles[i]["pz"] += particles[i]["vz"]
 
-        collides = set()
-        for k in range(len(particles)-1):
-            if has_collide[k]:
+        # look for collisions for this step
+        collisions = set()
+        for i in range(n-1):
+            # particle already destroyed, no collision
+            if has_collided[i]:
                 continue
-            for l in range(k+1, len(particles)):
-                if has_collide[l]:
+
+            for j in range(i+1, n):
+                # particles already destroyed, no collision
+                if has_collided[j]:
                     continue
-                if particles[k]["px"] == particles[l]["px"] and \
-                   particles[k]["py"] == particles[l]["py"] and \
-                   particles[k]["pz"] == particles[l]["pz"]:
-                    collides.add(k)
-                    collides.add(l)
 
-        total_collide += len(collides)
-        print("step", i, "collides:", collides, "total", total_collide)
-        for c in collides:
-            has_collide[c] = True
+                if particles[i]["px"] == particles[j]["px"] and \
+                   particles[i]["py"] == particles[j]["py"] and \
+                   particles[i]["pz"] == particles[j]["pz"]:
+                    collisions.add(i)
+                    collisions.add(j)
 
+        # set the collided particles as destroyed
+        n_destroyed += len(collisions)
+        for p in collisions:
+            has_collided[p] = True
 
-    return len(particles) - total_collide
+    return n - n_destroyed
 
 
 if __name__ == "__main__":
-    filename = "day20.txt"
+    filename = "day20_particles.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
-        lines = open(filename).read().split("\n")
-        #part_1 = do_stuff(lines)
-        part_2 = collisions(lines)
-        #print("PART ONE:", part_1)
+        particles = parse_file(filename)
+        part_1 = closest_to_origin(particles, 400)
+        print("PART ONE:", part_1)
+        part_2 = n_particles_left(particles, 40)
         print("PART TWO:", part_2)
