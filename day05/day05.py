@@ -21,7 +21,7 @@ def n_steps(array, specific_condition=False):
     return step
 
 if __name__ == '__main__':
-    filename = "day5_jumps.txt"
+    filename = "day05_jumps.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
