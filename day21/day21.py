@@ -99,10 +99,10 @@ def one_iteration(grid, rules):
 def generate_fractal(pattern, rules):
     """Use the start pattern and the rules to generate 5 fractal iterations."""
 
-    for i in range(5):
+    for i in range(18):
         c = "".join(pattern).count("#")
         print("Iteration", i, "#", c)
-        print("\n".join(pattern))
+#        print("\n".join(pattern))
         pattern = one_iteration(pattern, rules)
 
     # count number of # in last pattern
