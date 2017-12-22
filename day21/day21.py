@@ -96,18 +96,17 @@ def one_iteration(grid, rules):
 
     return new_grid
 
-def generate_fractal(pattern, rules):
+def generate_fractals(pattern, rules):
     """Use the start pattern and the rules to generate 5 fractal iterations."""
 
-    for i in range(18):
-        c = "".join(pattern).count("#")
-        print("Iteration", i, "#", c)
+    n_pixels_on = {}
+    for i in range(1, 19):
 #        print("\n".join(pattern))
         pattern = one_iteration(pattern, rules)
+        c = "".join(pattern).count("#")
+        n_pixels_on[i] = c
 
-    # count number of # in last pattern
-    c = "".join(pattern).count("#")
-    return c
+    return n_pixels_on[5], n_pixels_on[18]
 
 if __name__ == "__main__":
     filename = "day21_input.txt"
@@ -116,5 +115,6 @@ if __name__ == "__main__":
     else:
         rules = load_rules(filename)
         start = ".#./..#/###".split("/")
-        part_1 = generate_fractal(start, rules)
+        part_1, part_2 = generate_fractals(start, rules)
         print("PART ONE:", part_1)
+        print("PART TWO:", part_2)
