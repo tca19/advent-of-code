@@ -37,7 +37,7 @@ def loop_size(banks):
     return n_state, n_state - states[representation]
 
 if __name__ == '__main__':
-    filename = "day6_banks.txt"
+    filename = "day06_banks.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
