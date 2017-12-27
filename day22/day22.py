@@ -2,7 +2,7 @@
 
 import os.path
 
-def contaminate(grid, n_burst=1, evolved=False):
+def contaminate(grid, n_burst, evolved=False):
     """Simulate n_burst steps of node contamination."""
 
     # expand grid and copy grid nodes into new grid
@@ -27,31 +27,39 @@ def contaminate(grid, n_burst=1, evolved=False):
     y_move = [0, 1, 0, -1]
     n_infection = 0
 
+    # not evolved = part 1
     if not evolved:
         for i in range(n_burst):
-            #print(i, x, y, n_burst)
             if grid[x][y] == "#":
-                #print("node", x, y, "is infected. turning right")
                 grid[x][y] = "." # clean node
                 direction = (direction + 1) % 4
             else:
-                #print("node", x, y, "is clean. turning left")
                 grid[x][y] = "#" # infect node
-                n_infection += 1
                 direction = (direction - 1) % 4
+                n_infection += 1
 
-            x += x_move[direction]
-            y += y_move[direction]
-
-           # print("after burst", i)
-           # print(x, y, direction)
-           # for line in grid:
-           #     print(line)
-
-           # ##print()
-            #print(n_infection)
+            x, y = x + x_move[direction], y + y_move[direction]
 
         return n_infection
+
+    # evolved = part 2
+    for i in range(n_burst):
+        if grid[x][y] == ".":   # clean node becomes weakened
+            grid[x][y] = "W"
+            direction = (direction - 1) % 4
+        elif grid[x][y] == "W": # weakened node becomes infected
+            grid[x][y] = "#"
+            n_infection += 1
+        elif grid[x][y] == "#": # infected node becomes flagged
+            grid[x][y] = "F"
+            direction = (direction + 1) % 4
+        else:                   # flagged node becomes clean
+            grid[x][y] = "."
+            direction = (direction + 2) % 4
+
+        x, y = x + x_move[direction], y + y_move[direction]
+
+    return n_infection
 
 if __name__ == "__main__":
     filename = "day22_infected.txt"
@@ -59,9 +67,8 @@ if __name__ == "__main__":
         print("ERROR. Name your input file as:", filename)
     else:
         grid = open(filename).read().strip().split("\n")
-        grid = "..#\n#..\n...".split("\n")
         grid = [list(line) for line in grid]
-        part_1 = contaminate(grid, n_burst=10000)
-        #part_2 = contaminate(grid, 7, evolved=False)
+        part_1 = contaminate(grid, 10000)
+        part_2 = contaminate(grid, 10000000, evolved=True)
         print("PART ONE:", part_1)
-#        print("PART TWO:", part_2)
+        print("PART TWO:", part_2)
