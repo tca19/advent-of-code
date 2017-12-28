@@ -7,14 +7,14 @@ def find_faulty_weight(lines):
     """Build the tree structure made of each node, find the node that unbalance
     the tree, and what its weight should be."""
 
-    # for each node, get its weight and its children
     nodes      = {}
     has_parent = set()
 
+    # read lines to get weight and children of each node
     for line in lines:
         line = line.strip().split('->')
         name, weight = line[0].split()
-        weight = int(weight[1:-1]) # because info inside ( )
+        weight = int(weight[1:-1]) # because weight data inside ( )
         nodes[name] = {"weight":   weight,
                        "children": []
                       }
@@ -28,15 +28,18 @@ def find_faulty_weight(lines):
     # root is the node that has no parent
     root = (set(nodes.keys()) - has_parent).pop() # .pop() to get the element
 
+    # add the "tower_weight" field to each node
     compute_tower_weight(nodes, root)
+
+    # verify if each node is balanced, find correct weight
     correct_weight = verify(nodes, root)
 
     return root, correct_weight
 
 def compute_tower_weight(tree, node):
-    """Find weight of tower holded by node. Look if we already computed the
-    weight of this tower."""
+    """Find weight of tower holded by node."""
 
+    # no children = it's a leaf. Tower weight is its own weight
     if tree[node]["children"] == []:
         tree[node]["tower_weight"] = tree[node]["weight"]
         return tree[node]["tower_weight"]
@@ -61,7 +64,7 @@ def verify(tree, node):
 
     tower_weights = [tree[c]["tower_weight"] for c in tree[node]["children"]]
 
-    # all same values, need to inspect deeper
+    # if all same values, need to inspect deeper
     if len(set(tower_weights)) == 1:
         for c in tree[node]["children"]:
             res = verify(tree, c)
@@ -69,9 +72,8 @@ def verify(tree, node):
                 return res
         # all children have no problem, so this node has no problem as well
         return -1
-
     else:
-        # find faulty and correct weights
+        # find faulty and correct weights of children tower_weight
         occ = {v:k for k,v in Counter(tower_weights).items()}
         faulty  = occ[1] # faulty weight is unique (so occ=1)
         correct = faulty ^ min(tower_weights) ^ max(tower_weights)
@@ -82,7 +84,7 @@ def verify(tree, node):
                 faulty_node = c
                 break
 
-        # look if problem comes from its children
+        # look if problem comes from the children of faulty node
         for c in tree[faulty_node]["children"]:
             res = verify(tree, c)
             if res != -1: # problem comes from deeper
@@ -92,7 +94,7 @@ def verify(tree, node):
         return tree[faulty_node]["weight"] + (correct - faulty)
 
 if __name__ == '__main__':
-    filename = "day7_structure.txt"
+    filename = "day07_structure.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
