@@ -4,8 +4,8 @@ import os.path
 
 def number_valid(passphrases):
     """Return the number of valid passphrase (tuple) if:
-         - all words must be different (1)
-         - no words should be anagrams (2)
+         - all words must be different (part 1)
+         - no words should be anagrams (part 2)
     """
 
     n_valid_1 = n_valid_2 = 0
@@ -29,4 +29,3 @@ if __name__ == '__main__':
         part_1, part_2 = number_valid(passphrases)
         print("PART ONE:", part_1)
         print("PART TWO:", part_2)
-

@@ -6,7 +6,6 @@ def n_steps(array, specific_condition=False):
     """Compute number of steps required to escape array"""
 
     step = i = 0
-
     while -1 < i < len(array):
         offset = array[i]
 
@@ -27,7 +26,7 @@ if __name__ == '__main__':
     else:
         lines = open(filename).read().split()
         offsets = list(map(int, lines))
-        part_1 = n_steps(offsets[:])
+        part_1 = n_steps(offsets[:]) # copy because we need original for part 2
         print("PART ONE:", part_1)
         part_2 = n_steps(offsets, specific_condition=True)
         print("PART TWO:", part_2)

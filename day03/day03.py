@@ -33,7 +33,7 @@ def distance_to_1(n):
     return hor_dist + ver_dist
 
 def sum_adjacent(x, y, grid):
-    """Return sum of values in all adjacent cell to (x, y)."""
+    """Return sum of values in all adjacent cells to (x, y)."""
     s = grid[x-1][y-1] + grid[x-1][y] + grid[x-1][y+1] \
       + grid[x  ][y-1] +      0       + grid[x  ][y+1] \
       + grid[x+1][y-1] + grid[x+1][y] + grid[x+1][y+1]
@@ -41,15 +41,15 @@ def sum_adjacent(x, y, grid):
     return s
 
 def find_larger_value(n):
-    """Build a spiral grid where all new value is the sum of current
+    """Build a spiral grid where each new value is the sum of current
     adjacent cells. Find the first new value larger than n."""
 
     grid = [ [0 for _ in range(22)] for _ in range(22) ]
-    grid[10][10] = 1  # origin of spiral grid is placed at (10, 10)
+    grid[10][10] = 1  # origin of spiral grid is placed at (10, 10) (center)
     x, y = 10, 10
 
-    # build each new value of current ring. Start with left side, then top,
-    # right and finally bottom side. Stop once we have a value larger than n
+    # build the spiral ring by ring. Start with left side, then top, right and
+    # finally bottom side. Stop once we have a value larger than n
     for size_ring in range(3, 20, 2):
         # first cell of new ring
         y += 1
@@ -88,6 +88,6 @@ def find_larger_value(n):
 if __name__ == "__main__":
     number = 277678
     part_1 = distance_to_1(number)
-    part_2 = find_larger_value(number)
     print("PART ONE:", part_1)
+    part_2 = find_larger_value(number)
     print("PART TWO:", part_2)

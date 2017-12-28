@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-
 import os.path
-s = 0
 
 def checksum_rows(lines):
     """Compute the checksum (max - min) for each row. Sum all checksums."""
@@ -19,7 +17,6 @@ def evenly_divide_rows(lines):
     the results of all divisions."""
 
     s = 0
-
     for line in lines:
         row = list(map(int, line.split()))
         n = len(row)

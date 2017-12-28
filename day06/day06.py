@@ -6,8 +6,8 @@ def loop_size(banks):
     """Count number of states required to find an already seen state, and the
     size of the loop."""
 
-    states    = {} # store each state + the step at which we saw it first
-    n_state   = 0
+    states  = {} # store each state + the step at which we saw it first
+    n_state = 0
 
     while True:
         # look if we already met this state. If already met, exit the program.
