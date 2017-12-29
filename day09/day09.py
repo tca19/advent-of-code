@@ -4,7 +4,7 @@ import re
 import os.path
 
 def score(stream):
-    """Compute the score of stream."""
+    """Compute the score of stream and length of garbage in stream."""
 
     # remove canceled characters
     stream = re.sub("!.", "", stream)
@@ -30,7 +30,7 @@ def score(stream):
     return score, garbage_length
 
 if __name__ == '__main__':
-    filename = "day9_stream.txt"
+    filename = "day09_stream.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
