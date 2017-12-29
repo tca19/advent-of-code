@@ -4,28 +4,16 @@ import os.path
 from collections import defaultdict
 
 def process_instructions(instructions):
-    """For each instructions, increase or decrease value of register. Return the
-    maxi value of all registers, and the max value held during process."""
+    """For each instruction, increase or decrease value of register. Return the
+    largest value of all registers, and the max value held during process."""
 
-    # defaultdict so not seen registers have value of 0 (as required)
     registers    = defaultdict(int)
     max_held_val = 0
 
     for instruction in instructions:
         name, cmd, val, _, op1, op, op2 = instruction.split()
 
-        if op == ">":
-            condition = registers[op1] > int(op2)
-        elif op == "<":
-            condition = registers[op1] < int(op2)
-        elif op == ">=":
-            condition = registers[op1] >= int(op2)
-        elif op == "<=":
-            condition = registers[op1] <= int(op2)
-        elif op == "==":
-            condition = registers[op1] == int(op2)
-        elif op == "!=":
-            condition = registers[op1] != int(op2)
+        condition = eval("{} {} {}".format(registers[op1], op, op2))
 
         if condition:
             if cmd == "inc":
@@ -35,11 +23,10 @@ def process_instructions(instructions):
 
         max_held_val = max(max_held_val, registers[name])
 
-    max_val = max(registers.values())
-    return max_val, max_held_val
+    return max(registers.values()), max_held_val
 
 if __name__ == '__main__':
-    filename = "day8_instructions.txt"
+    filename = "day08_instructions.txt"
     if not os.path.exists(filename):
         print("ERROR. Name your input file as:", filename)
     else:
