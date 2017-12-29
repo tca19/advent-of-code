@@ -23,7 +23,7 @@ def knot_round(lengths, numbers, position=0, skip_size=0):
     return position, skip_size, numbers[0] * numbers[1]
 
 def knot_hash(message):
-    """Compute the knot-hash of message. Return the binary string of hash."""
+    """Compute the Knot Hash of message. Return the binary string of hash."""
 
     ascii_codes = [str(ord(c)) for c in message]
     ascii_codes = ','.join(ascii_codes + ["17", "31", "73", "47", "23"])
@@ -34,7 +34,7 @@ def knot_hash(message):
     # do 64 rounds
     for _ in range(64):
         position, skip_size, _ =  knot_round(ascii_codes, numbers,
-                                     position=position, skip_size=skip_size)
+                                             position, skip_size)
 
     # sparse hash (256 elements) => deep hash (16 elements)
     deep_hash = []
@@ -81,7 +81,7 @@ def visit_region(grid, seen, i, j):
         visit_region(grid, seen, i, j+1)
 
 def number_regions(grid):
-    """Find the number of independant regions of '1' in grid."""
+    """Find the number of independent regions of '1' in grid."""
 
     seen = [[False for _ in range(128)] for _ in range(128)]
     n = 0
@@ -100,6 +100,6 @@ if __name__ == '__main__':
     else:
         string = open(filename).read().strip()
         part_1, grid = n_bits_1(string)
-        part_2 = number_regions(grid)
         print("PART ONE:", part_1)
+        part_2 = number_regions(grid)
         print("PART TWO:", part_2)

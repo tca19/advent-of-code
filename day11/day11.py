@@ -25,10 +25,10 @@ def min_steps(path):
         elif direction == "nw":
             x -= 1
 
-        distance = max(max(abs(x), abs(y)), abs(x-y))
+        distance = max(abs(x), abs(y), abs(x-y))
         max_distance = max(max_distance, distance)
 
-    steps = max(max(abs(x), abs(y)), abs(x-y))
+    steps = max(abs(x), abs(y), abs(x-y))
     return steps, max_distance
 
 if __name__ == '__main__':

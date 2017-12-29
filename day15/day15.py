@@ -2,42 +2,28 @@
 
 import os.path
 
-def n_matches(valA, valB):
-    """Return number of value matches between generator A and generator B."""
+def n_matches(valA, valB, n_pairs, criteria=False):
+    """Return number of value matches between generator A and generator B after
+    n_pairs generated."""
 
     n = 0
     mulA, mulB, p = 16807, 48271, 2**31 - 1
 
-    for _ in range(40000000):
+    for _ in range(n_pairs):
         valA = (valA * mulA) % p
         valB = (valB * mulB) % p
 
-        if (valA &  0xFFFF) == (valB &  0xFFFF): # same last 16 bits
-            n += 1
-
-    return n
-
-def n_matches_condition(valA, valB):
-    """Return number of value matches between generator A and generator B, but
-    they both have a special condition when generating numbers."""
-
-    n = 0
-    mulA, mulB, p = 16807, 48271, 2**31 - 1
-
-    for _ in range(5000000):
-        valA = (valA * mulA) % p
-        while (valA & 0b11) > 0:     # regenerate until it's a multiple of 4
+        # regenerate until it's a multiple of 4 (for part 2)
+        while criteria and (valA & 0b11) > 0:
             valA = (valA * mulA) % p
-
-        valB = (valB * mulB) % p
-        while (valB & 0b111) > 0:    # regenerate until it's a multiple of 8
+        # regenerate until it's a multiple of 8 (for part 2)
+        while criteria and (valB & 0b111) > 0:
             valB = (valB * mulB) % p
 
         if (valA &  0xFFFF) == (valB &  0xFFFF): # same last 16 bits
             n += 1
 
     return n
-
 
 if __name__ == '__main__':
     filename = "day15_seeds.txt"
@@ -46,8 +32,7 @@ if __name__ == '__main__':
     else:
         seeds = open(filename).read().split()
         seedA, seedB = int(seeds[4]), int(seeds[9])
-#        seedA, seedB = 65, 8921
-        part_1 = n_matches(seedA, seedB)
-        part_2 = n_matches_condition(seedA, seedB)
+        part_1 = n_matches(seedA, seedB, 40000000)
         print("PART ONE:", part_1)
+        part_2 = n_matches(seedA, seedB, 5000000, True)
         print("PART TWO:", part_2)

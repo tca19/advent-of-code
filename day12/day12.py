@@ -4,6 +4,7 @@ import os.path
 
 def programs_reached(neighbors, start_id):
     """Return the list of programs connected to (and including) start_id."""
+
     already_seen = {start_id}
     to_visit     = set(neighbors[start_id])
 
@@ -21,8 +22,8 @@ def programs_reached(neighbors, start_id):
     return already_seen
 
 def n_groups(lines):
-    """Read the file line by line to build the pipes map, find the number of
-    different independant groups."""
+    """Read each line to build the pipes map, find the number of different
+    independent groups (part 2) and number of programs in group 0 (part 1)."""
 
     # build communication map
     neighbors = {}

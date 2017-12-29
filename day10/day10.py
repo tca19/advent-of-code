@@ -23,6 +23,8 @@ def knot_round(lengths, numbers, position=0, skip_size=0):
     return position, skip_size, numbers[0] * numbers[1]
 
 def knot_hash(message):
+    """Compute the Knot Hash of message."""
+
     ascii_codes = [str(ord(c)) for c in message]
     ascii_codes = ','.join(ascii_codes + ["17", "31", "73", "47", "23"])
 
@@ -32,7 +34,7 @@ def knot_hash(message):
     # do 64 rounds
     for _ in range(64):
         position, skip_size, _ =  knot_round(ascii_codes, numbers,
-                                     position=position, skip_size=skip_size)
+                                             position, skip_size)
 
     # sparse hash (256 elements) => deep hash (16 elements)
     deep_hash = []
@@ -53,6 +55,6 @@ if __name__ == '__main__':
     else:
         lengths = open(filename).read().strip()
         _, _, part_1 = knot_round(lengths, list(range(256)))
-        part_2       = knot_hash(lengths)
         print("PART ONE:", part_1)
+        part_2 = knot_hash(lengths)
         print("PART TWO:", part_2)
