@@ -4,6 +4,7 @@ import os.path
 
 def load_rules(filename):
     """Read filename to get all the rules (pattern transformation)."""
+
     rules = {}
     with open(filename) as f:
         for line in f:
@@ -13,36 +14,39 @@ def load_rules(filename):
     return rules
 
 def rotate(pattern):
-    """Perform a 90 degree clockwise rotation of pattern. Assume pattren is in
-    the form ... / ... """
+    """Perform a 90 degree clockwise rotation of pattern. Assume pattern is in
+    the form .../... """
+
     grid   = pattern.split("/")
     n_cols = len(grid)
     new = []
     # columns become rows
     for i in range(n_cols):
-        col = ""
-        for j in range(n_cols-1, -1, -1):
-            col += grid[j][i]
-        new.append(col)
+        row = ""
+        for j in range(n_cols-1, -1, -1): # from bottom to top
+            row += grid[j][i]
+        new.append(row)
 
     return "/".join(new)
 
 def flip(pattern):
-    """Vertically flip pattern. Assume pattren is in the form ... / ... """
+    """Vertically flip pattern. Assume pattern is in the form ... / ... """
+
     grid = pattern.split("/")
     new = []
-    for i in range(len(grid)):    # for each row
-        new.append(grid[i][::-1]) # add the mirrored row (relative to middle)
+    for row in grid:
+        new.append(row[::-1]) # vertical flip = mirror at middle = reverse
 
     return "/".join(new)
 
-def find_pattern(pattern, rules):
-    """Find the correct transformation of pattern. If needed, rotate or flip
-    pattern to find the appropriate transformation."""
+def transform(pattern, rules):
+    """Find the correct transformation of pattern given the rules. If needed,
+    rotate or flip pattern to find the appropriate transformation."""
+
     if pattern in rules:
         return rules[pattern]
 
-    for i in range(4):
+    for _ in range(4): # at most 4 rotations and flips needed
         f = flip(pattern)
         if f in rules:
             return rules[f]
@@ -51,17 +55,14 @@ def find_pattern(pattern, rules):
         if pattern in rules:
             return rules[pattern]
 
-    print("pattern not found")
-    print(pattern)
-
 def one_iteration(grid, rules):
     """Separate the grid into squares, apply transformation to each square, then
-    create the new grid."""
+    recreate the grid by combining squares."""
 
     # grid -> squares
     squares = []
     n = len(grid)
-    if n % 2 == 0: # divide grid into 2x2 squares. iterate rows then columns
+    if n%2 == 0: # divide grid into 2x2 squares because size is even
         for j in range(0, n, 2):
             row = []
             for i in range(0, n, 2):
@@ -82,12 +83,12 @@ def one_iteration(grid, rules):
     n = len(squares)
     for i in range(n):
         for j in range(n):
-            squares[i][j] = find_pattern(squares[i][j], rules)
+            squares[i][j] = transform(squares[i][j], rules)
 
     # squares -> grid
     square_size = len(squares[0][0].split("/"))
     new_grid = []
-    for row in range(len(squares)):
+    for row in range(n):
         for i in range(square_size):
             line = ""
             for j in range(len(squares[row])):
@@ -97,11 +98,10 @@ def one_iteration(grid, rules):
     return new_grid
 
 def generate_fractals(pattern, rules):
-    """Use the start pattern and the rules to generate 5 fractal iterations."""
+    """Use the start pattern and the rules to generate 18 fractal iterations."""
 
     n_pixels_on = {}
     for i in range(1, 19):
-#        print("\n".join(pattern))
         pattern = one_iteration(pattern, rules)
         c = "".join(pattern).count("#")
         n_pixels_on[i] = c

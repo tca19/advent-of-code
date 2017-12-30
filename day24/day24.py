@@ -4,6 +4,7 @@ import os.path
 
 def parse_file(filename):
     """Read each line as a tuple of integers. Return a set of these tuples."""
+
     components = set()
     with open(filename) as f:
         for line in f:
@@ -31,7 +32,7 @@ def max_strength_bridge(port, components, strength, length=None):
     possible_strength = []
     for c in candidates:
         new_port = c[1] if c[0] == port else c[0]
-        new_components = set(components)
+        new_components = set(components) # copy because .remove() done in place
         new_components.remove(c)
         possible_strength.append(max_strength_bridge(new_port, new_components,
             strength + sum(c), None if length is None else length+1))
@@ -45,6 +46,6 @@ if __name__ == "__main__":
     else:
         components = parse_file(filename)
         part_1 = max_strength_bridge(0, components, 0, None)[1]
-        part_2 = max_strength_bridge(0, components, 0, 0)[1]
         print("PART ONE:", part_1)
+        part_2 = max_strength_bridge(0, components, 0, 0)[1]
         print("PART TWO:", part_2)

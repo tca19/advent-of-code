@@ -5,7 +5,7 @@ import os.path
 def contaminate(grid, n_burst, evolved=False):
     """Simulate n_burst steps of node contamination."""
 
-    # expand grid and copy grid nodes into new grid
+    # expand grid (add borders of clean nodes). copy original grid into new grid
     n = len(grid)
     border = 100*n
     new_grid = [["." for _ in range(border*2+n)] for _ in range(border*2+n)]
@@ -33,6 +33,7 @@ def contaminate(grid, n_burst, evolved=False):
             if grid[x][y] == "#":
                 grid[x][y] = "." # clean node
                 direction = (direction + 1) % 4
+
             else:
                 grid[x][y] = "#" # infect node
                 direction = (direction - 1) % 4
@@ -44,16 +45,19 @@ def contaminate(grid, n_burst, evolved=False):
 
     # evolved = part 2
     for i in range(n_burst):
-        if grid[x][y] == ".":   # clean node becomes weakened
+        if grid[x][y] == ".":   # clean -> weakened, turn left
             grid[x][y] = "W"
             direction = (direction - 1) % 4
-        elif grid[x][y] == "W": # weakened node becomes infected
+
+        elif grid[x][y] == "W": # weakened -> infected, same direction
             grid[x][y] = "#"
             n_infection += 1
-        elif grid[x][y] == "#": # infected node becomes flagged
+
+        elif grid[x][y] == "#": # infected -> flagged, turn right
             grid[x][y] = "F"
             direction = (direction + 1) % 4
-        else:                   # flagged node becomes clean
+
+        else:                   # flagged -> clean, reverse direction
             grid[x][y] = "."
             direction = (direction + 2) % 4
 
@@ -69,6 +73,6 @@ if __name__ == "__main__":
         grid = open(filename).read().strip().split("\n")
         grid = [list(line) for line in grid]
         part_1 = contaminate(grid, 10000)
-        part_2 = contaminate(grid, 10000000, evolved=True)
         print("PART ONE:", part_1)
+        part_2 = contaminate(grid, 10000000, evolved=True)
         print("PART TWO:", part_2)
