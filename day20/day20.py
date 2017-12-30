@@ -3,11 +3,10 @@
 import re
 import copy
 import os.path
-import itertools
 
 def parse_file(filename):
-    """Parse filename to read infos about particles. Return an array of
-    particles."""
+    """Parse filename to read infos (position/velocity/acceleration) about
+    particles. Return a list of particles."""
 
     particles = []
     with open(filename) as f:
@@ -26,13 +25,13 @@ def parse_file(filename):
     return particles
 
 def distance(particle):
-    """Return the mahattan distance between (0,0,0) and particle."""
+    """Return the Manhattan distance between particle and (0,0,0)."""
 
     return abs(particle["px"]) + abs(particle["py"]) + abs(particle["pz"])
 
 def closest_to_origin(particles_, max_steps):
-    """Find the particle closest to origin (0, 0, 0) after a certain number of
-    steps (long term).
+    """Find the particle closest to origin (0,0,0) after a certain number of
+    steps.
     """
 
     particles = copy.deepcopy(particles_) # so we don't modify original
@@ -63,23 +62,24 @@ def n_particles_left(particles_, max_steps):
     particles = copy.deepcopy(particles_) # so we don't modify original
     n = len(particles)
 
-    has_collided  = [False for _ in range(len(particles))]
-    n_destroyed   = 0
+    has_collided = [False for _ in range(len(particles))]
+    n_destroyed  = 0
 
     for step in range(max_steps):
         # move every non-destroyed particles
-        for i in range(n):
+        for i, particle in enumerate(particles):
             if has_collided[i]:
                 continue
 
-            particles[i]["vx"] += particles[i]["ax"]
-            particles[i]["vy"] += particles[i]["ay"]
-            particles[i]["vz"] += particles[i]["az"]
-            particles[i]["px"] += particles[i]["vx"]
-            particles[i]["py"] += particles[i]["vy"]
-            particles[i]["pz"] += particles[i]["vz"]
+            particle["vx"] += particle["ax"]
+            particle["vy"] += particle["ay"]
+            particle["vz"] += particle["az"]
+            particle["px"] += particle["vx"]
+            particle["py"] += particle["vy"]
+            particle["pz"] += particle["vz"]
 
-        # look for collisions for this step
+        # look for collisions for this step. Go through each pair (i,j) of
+        # particles to know if there are at the same position.
         collisions = set()
         for i in range(n-1):
             # particle already destroyed, no collision
@@ -97,13 +97,12 @@ def n_particles_left(particles_, max_steps):
                     collisions.add(i)
                     collisions.add(j)
 
-        # set the collided particles as destroyed
+        # mark the collided particles as destroyed
         n_destroyed += len(collisions)
         for p in collisions:
             has_collided[p] = True
 
     return n - n_destroyed
-
 
 if __name__ == "__main__":
     filename = "day20_particles.txt"

@@ -5,29 +5,27 @@ from collections import defaultdict
 
 def convert_value(s, registers):
     """Convert s to integer value, or look its value in registers."""
-    try:
-        X = int(s)
-    except:
-        X = registers[s]
 
-    return X
+    try:
+        return int(s)
+    except:
+        return registers[s]
 
 def recover_frequency(instructions):
-    """Process each instructions. Store all played frequencies. Return the last
-    played frequency when the first "rcv" instruction is met."""
+    """Process each instruction. Return the last played sound when the first
+    "rcv" instruction is met."""
 
-    pos         = 0
-    registers   = defaultdict(int)
-    last_played = -1
+    pos, sound = 0, 0
+    registers  = defaultdict(int)
 
     while True:
         row = instructions[pos].split()
 
         if row[0] == "snd":
-            last_played = convert_value(row[1], registers)
+            sound = convert_value(row[1], registers)
 
         if row[0] == "set":
-            registers[row[1]] = convert_value(row[2], registers)
+            registers[row[1]]  = convert_value(row[2], registers)
 
         if row[0] == "add":
             registers[row[1]] += convert_value(row[2], registers)
@@ -40,7 +38,7 @@ def recover_frequency(instructions):
 
         if row[0] == "rcv":
             if convert_value(row[1], registers) != 0:
-                return last_played
+                return sound
 
         if row[0] == "jgz":
             if convert_value(row[1], registers) > 0:
@@ -76,7 +74,7 @@ def concurrent_programs(instructions):
             prog1_send += 1
 
         if row1[0] == "set":
-            registers1[row1[1]] = convert_value(row1[2], registers1)
+            registers1[row1[1]]  = convert_value(row1[2], registers1)
 
         if row1[0] == "add":
             registers1[row1[1]] += convert_value(row1[2], registers1)
@@ -104,7 +102,7 @@ def concurrent_programs(instructions):
             queue1.insert(0, convert_value(row0[1], registers0))
 
         if row0[0] == "set":
-            registers0[row0[1]] = convert_value(row0[2], registers0)
+            registers0[row0[1]]  = convert_value(row0[2], registers0)
 
         if row0[0] == "add":
             registers0[row0[1]] += convert_value(row0[2], registers0)
@@ -134,6 +132,6 @@ if __name__ == "__main__":
     else:
         instructions = open(filename).read().split("\n")
         part_1 = recover_frequency(instructions)
-        part_2 = concurrent_programs(instructions)
         print("PART ONE:", part_1)
+        part_2 = concurrent_programs(instructions)
         print("PART TWO:", part_2)

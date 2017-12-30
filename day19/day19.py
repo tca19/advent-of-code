@@ -16,7 +16,7 @@ def next_cell(x, y, direction):
         return x, y-1
 
 def follow_path(lines):
-    """Get every letters on the path. Compute legth of path as well."""
+    """Get every letters on the path. Compute length of path as well."""
 
     direction = "S" # starting point comes from the top, so direction is south
     x, y = 0, lines[0].index("|")

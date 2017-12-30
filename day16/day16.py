@@ -56,6 +56,6 @@ if __name__ == '__main__':
     else:
         moves = open(filename).read().strip().split(',')
         part_1 = programs_dance(moves, list("abcdefghijklmnop"))
-        part_2 = programs_dance_repeat(moves)
         print("PART ONE:", part_1)
+        part_2 = programs_dance_repeat(moves)
         print("PART TWO:", part_2)
