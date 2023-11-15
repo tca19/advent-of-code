@@ -34,6 +34,11 @@ Python3 solution for the problem of Day 1 in Advent of Code 2022.
 # Part 1
 # ======
 # The task is to find the group with the largest sum, and to print this sum.
+#
+# Part 2
+# ======
+# The task is to find the 3 groups with the largest sum, and to print the sum
+# of their respective group sums.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # We open the input file, and instead of reading it line by line, we read it
@@ -59,6 +64,11 @@ def sum_group(group: str) -> int:
 
 if __name__ == "__main__":
     group_sums = [sum_group(group) for group in data]
-    part1 = max(group_sums)
+
+    # Sort it because Part 2 requires to find the 3 largest group sums.
+    group_sums.sort()
+    part1 = group_sums[-1]  # list is already sorted. Max value is at [-1].
+    part2 = sum(group_sums[-3:])  # the 3 largest values are at the end
 
     print(f"Part 1: {part1}")
+    print(f"Part 2: {part2}")
