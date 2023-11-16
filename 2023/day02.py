@@ -29,6 +29,16 @@ Python3 solution for the problem of Day 2 in Advent of Code 2022.
 #   6 (because I win) + 2 (because I play Paper) = 8
 #
 # The task is to calculate my total score after playing all rounds.
+#
+# Part 2
+# ======
+# This time, the letters X, Y and Z do not represent my choice, but the
+# expected outcome of the round: X means a Lose, Y a Draw and Z a Win. For each
+# round, I have to find the appropriate choice that ends the round with the
+# expected outcome. Then compute the score the same way as for part 1.
+#
+# The task is to calculate my total score after playing all rounds, with the
+# new constraint given by the expected outcome of each round.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -93,7 +103,44 @@ def score_part1(list_rounds: list[str]) -> int:
     return total_score
 
 
+def score_part2(list_rounds: list[str]) -> int:
+    """
+    Return the total score after playing each round, with the new constraint
+    given by the expected outcome of each round.
+
+        Parameters:
+            list_rounds (list[str]): A list of rounds. A round is a string
+                                     composed of 2 letters, separated by a
+                                     space.
+        Returns:
+            total_score (int): The sum of all my scores obtained after each
+                               round.
+    """
+    expected_outcome = {
+        "X": "Lose", "Y": "Draw", "Z": "Win"
+    }
+    total_score = 0
+    for round_letters in list_rounds:
+        opponent_letter, expected_letter = round_letters.split()
+        opponent_choice = letter_to_choice[opponent_letter]
+        outcome = expected_outcome[expected_letter]
+
+        # To find my choice, we iterate over all possible game combinations and
+        # select the one that has: the same opponent choice + the correct
+        # expected output.
+        for (opp, mine), out in round_outcome.items():
+            if opp == opponent_choice and out == outcome:
+                my_choice = mine
+                break
+
+        score_round = score[my_choice] + score[outcome]
+        total_score += score_round
+    return total_score
+
+
 if __name__ == "__main__":
     part1 = score_part1(data)
+    part2 = score_part2(data)
 
     print(f"Part 1: {part1}")
+    print(f"Part 2: {part2}")
