@@ -22,10 +22,7 @@ Python3 solution for the problem of Day 1 in Advent of Code 2023.
 # find the sum of all numbers generated for each line.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# We open the input file, and read it line by line.
-with open("day01.input", encoding="UTF-8") as f:
-    data = f.readlines()
+import argparse
 
 
 def generate_number(line: str) -> int:
@@ -64,6 +61,14 @@ def generate_number(line: str) -> int:
 
 
 if __name__ == "__main__":
-    part1 = sum(generate_number(line) for line in data)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input", help="Filename of your input file.",
+                        default="day01.input")
+    args = parser.parse_args()
 
+    # We open the input file, and read it line by line.
+    with open(args.input, encoding="UTF-8") as f:
+        data = f.readlines()
+
+    part1 = sum(generate_number(line) for line in data)
     print(f"Part 1: {part1}")
