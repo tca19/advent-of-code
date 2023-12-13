@@ -2,7 +2,7 @@
 # *_* coding: utf-8 *_*
 
 """
-Python3 solution for the problem of Day 1 in Advent of Code 2023.
+Python3 solution for the problem of Day 2 in Advent of Code 2023.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
