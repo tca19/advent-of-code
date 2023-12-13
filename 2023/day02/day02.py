@@ -31,11 +31,19 @@ Python3 solution for the problem of Day 1 in Advent of Code 2023.
 # Some games would be impossible because some of the sets have a larger number
 # of red (or green, or blue) cubes. The task is to compute the sum of the IDs
 # of the games that are possible (and only those games).
+#
+# Part 2
+# ======
+# For each game, we need to find the minimum number of red, green and blue
+# cubes so that the game is possible (i.e. every drawn set is possible). Then,
+# we can compute the "power" of all sets in a game by multiplying the minimum
+# number of cubes for all colors. The task is to find the sum of all "power"
+# for each game.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 import argparse
 from collections import defaultdict
 
-# The expected number of cubes in the bag for each color.
+# The expected number of cubes in the bag for each color (used in Part 1).
 MAX_N_RED, MAX_N_GREEN, MAX_N_BLUE = 12, 13, 14
 
 
@@ -91,6 +99,29 @@ def is_cube_set_valid(n_cubes: dict) -> bool:
     return True
 
 
+def compute_game_power(cube_sets: list) -> int:
+    """
+    Compute the product of minimum red, green and blue cubes we need so that
+    every cube sets are valid.
+
+        Parameters:
+            cube_sets (list): List of drawn cube sets. Each set is a dictionary
+                              indicating the number of red, green and blue
+                              cubes.
+        Returns:
+            power (int): The product of minimum number of red, green and blue
+                         cubes.
+    """
+    min_red, min_green, min_blue = 0, 0, 0
+    for cube_set in cube_sets:
+        min_red = max(min_red, cube_set["red"])
+        min_green = max(min_green, cube_set["green"])
+        min_blue = max(min_blue, cube_set["blue"])
+
+    power = min_red * min_green * min_blue
+    return power
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", help="Filename of your input file.",
@@ -107,3 +138,8 @@ if __name__ == "__main__":
                              for n_cubes in cube_sets)]
     part1 = sum(possible_games)
     print(f"Part 1: {part1}")
+
+    all_powers = [compute_game_power(cube_sets)
+                  for (game_id, cube_sets) in all_games]
+    part2 = sum(all_powers)
+    print(f"Part 2: {part2}")
