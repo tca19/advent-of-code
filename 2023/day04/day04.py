@@ -29,6 +29,16 @@ Python3 solution for the problem of Day 4 in Advent of Code 2023.
 # score is 1; 2 wining numbers gives a score of 2; 3 winning numbers gives a
 # score of 4; (the score is doubled for each additional winning number). The
 # task is to find my total score for all games.
+#
+# Part 2
+# ======
+# Let's forget about the score obtained in each game. Now, each game can give
+# me copies of next games based on the count of winning numbers that I have.
+# If I have 5 winning numbers in game 10, I win copies of the next 5 games
+# (i.e. a copy of game 11, game 12, ..., game 15). Each copy of game 10 that I
+# have would also give me copies of game 11, 12, ... 15. The task is to find
+# the total number of games I have after playing all of them (the total
+# includes the original games and the copies obtained).
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 import argparse
 
@@ -58,8 +68,8 @@ def count_winning_numbers(line: str) -> int:
     game described by `line`.
 
         Parameters:
-            line (str): The string that describes a game. It comes directly from
-                        the input file.
+            line (str): The string that describes a game. It comes directly
+                        from the input file.
 
         Returns:
             n_winning_numbers (int): The count of my numbers that are also
@@ -85,5 +95,16 @@ if __name__ == "__main__":
     with open(args.input, encoding="UTF-8") as f:
         data = f.readlines()
 
-    part1 = sum(compute_score(count_winning_numbers(line)) for line in data)
+    n_winning_per_game = [count_winning_numbers(line) for line in data]
+    part1 = sum(compute_score(n_winning) for n_winning in n_winning_per_game)
     print(f"Part 1: {part1}")
+
+    n_cards = [1 for _ in range(len(n_winning_per_game))]
+    for i, n_winning in enumerate(n_winning_per_game):
+        for next_game_id in range(i+1, i+1 + n_winning):
+            # += n_cards[i] because I get new copies from the original card but
+            # also for all its copies, which is the number of the card `i` that
+            # I have at this moment.
+            n_cards[next_game_id] += n_cards[i]
+    part2 = sum(n_cards)
+    print(f"Part 2: {part2}")
