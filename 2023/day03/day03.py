@@ -30,9 +30,20 @@ Python3 solution for the problem of Day 3 in Advent of Code 2023.
 # ======
 # We consider that a number in the grid is a "part number" if there is a symbol
 # around it. The task is to find the sum of all "part numbers" in the grid.
+#
+# Part 2
+# ======
+# The grid contains some '*' symbols. A '*' symbol is called a "gear" if it is
+# adjacent to exactly 2 "part numbers". Its "gear ratio" is the product of its
+# 2 adjacent part numbers. The task is to find the sum of all gear ratios in
+# the grid.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+from collections import defaultdict
 import argparse
 import re
+
+# Maps a gear position (x,y) to its list of adjacent part numbers.
+GEARS: dict = defaultdict(list)
 
 
 def find_numbers(grid: list) -> list:
@@ -78,25 +89,39 @@ def find_symbols_around(number: tuple, grid: list) -> list:
                             `grid`.
     """
     symbols = []
-    x, y, length, _ = number
+    x, y, length, value = number
+
+    # For Part 2, we need to find the '*' symbols that have exactly 2 adjacent
+    # part numbers. So when we find a '*' during Part 1, we save in the global
+    # variable GEARS that for this '*' symbol (at its position), `number` is
+    # one of its adjacent neighbor. That way, we won't need to go through the
+    # traversal of the grid a second time to find the "gears" needed in Part 2.
 
     # Check left side.
     if grid[x][y-1] != ".":
         symbols.append(grid[x][y-1])
+        if grid[x][y-1] == "*":  # For Part 2
+            GEARS[(x, y-1)].append(value)
 
     # Check bottom side.
     for j in range(y-1, y-1 + (length+2)):
         if grid[x+1][j] != ".":
             symbols.append(grid[x+1][j])
+            if grid[x+1][j] == "*":  # For Part 2
+                GEARS[(x+1, j)].append(value)
 
     # Check right side.
     if grid[x][y+length] != ".":
         symbols.append(grid[x][y+length])
+        if grid[x][y+length] == "*":  # For Part 2
+            GEARS[(x, y+length)].append(value)
 
     # Check top side.
     for j in range(y-1, y-1 + (length+2)):
         if grid[x-1][j] != ".":
             symbols.append(grid[x-1][j])
+            if grid[x-1][j] == "*":  # For Part 2
+                GEARS[(x-1, j)].append(value)
 
     return symbols
 
@@ -123,3 +148,7 @@ if __name__ == "__main__":
     part1 = sum(value for (x, y, length, value) in all_numbers
                 if len(find_symbols_around((x, y, length, value), G)) > 0)
     print(f"Part 1: {part1}")
+
+    part2 = sum(numbers[0] * numbers[1] for gear, numbers in GEARS.items()
+                if len(numbers) == 2)
+    print(f"Part 2: {part2}")
