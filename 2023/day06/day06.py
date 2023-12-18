@@ -30,6 +30,15 @@ Python3 solution for the problem of Day 6 in Advent of Code 2023.
 # ======
 # For each race, count how many ways there exist to beat the distance record.
 # The task is to find the product of all the number of ways for each race.
+#
+# Part 2
+# ======
+# Now, there is only a single race instead of several ones! The time limit for
+# this single race is obtained by concatenating the numbers on the "Time:"
+# line. The distance record is also obtained by concatenating the numbers on
+# the "Distance:" line. For the example file, this gives a time limit of 71530
+# and a distance record of 940200. The task is to find how many ways there
+# exist to beat the distance record on this single race.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 import argparse
 
@@ -87,9 +96,16 @@ if __name__ == "__main__":
     with open(args.input, encoding="UTF-8") as f:
         data = f.readlines()
 
-    times = list(map(int, data[0].split(":")[1].split()))
-    distances = list(map(int, data[1].split(":")[1].split()))
+    times_str = data[0].split(":")[1].split()
+    times = list(map(int, times_str))
+    distances_str = data[1].split(":")[1].split()
+    distances = list(map(int, distances_str))
 
     part1 = product([n_ways_beat_record(t, d)
                      for (t, d) in zip(times, distances)])
     print(f"Part 1: {part1}")
+
+    time_single_race = int("".join(times_str))
+    distance_single_race = int("".join(distances_str))
+    part2 = n_ways_beat_record(time_single_race, distance_single_race)
+    print(f"Part 2: {part2}")
