@@ -222,6 +222,5 @@ if __name__ == "__main__":
         seed_ranges.append([seeds[pos], seeds[pos] + seeds[pos+1]])
     for mapping in all_mappings:
         seed_ranges = apply_mapping_to_ranges(seed_ranges, mapping)
-        seed_ranges.sort()
     part2 = min(start_range for (start_range, end_range) in seed_ranges)
     print(f"Part 2: {part2}")
