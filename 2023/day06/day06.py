@@ -87,6 +87,7 @@ def product(values: list[int]) -> int:
 
 
 if __name__ == "__main__":
+    # pylint: disable=C0103
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", help="Filename of your input file.",
                         default="day06.input")
