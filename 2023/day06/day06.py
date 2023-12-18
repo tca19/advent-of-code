@@ -70,6 +70,43 @@ def n_ways_beat_record(time_limit: int, distance_record: int) -> int:
     return n_ways
 
 
+def n_ways_beat_record_optimized(time_limit: int, distance_record: int) -> int:
+    """
+    Return the number of ways to beat the `distance_record` of the race, given
+    the `time_limit`. Use the mathematical formula instead of ranging over all
+    possible choices.
+
+        Parameters:
+            time_limit (int): The time limit of the race. We need to charge and
+                              travel only during this time limit.
+            distance_record (int): The distance we have to beat.
+
+        Returns:
+            n_ways (int): The number of ways to beat the distance record.
+    """
+    # Let's denote the holding time as X. We have:
+    #           speed = hold_time = X
+    # and       time_left = time_limit - hold_time = time_limit - X
+    # Therefore:
+    #           traveled_distance = speed * time_left
+    #                             = X * (time_limit - X)
+    #                             = -X^2 + X * time_limit
+    # We search the values X such that traveled_distance > distance_record.
+    # Which is:
+    #           -X^2 + X * time_limit > distance_record
+    # i.e.      -X^2 + X * time_limit - distance_record > 0
+    #
+    # We have a polynom of degree 2 with a negative coefficient for X^2. The
+    # values of X that meet the inequality criteria are between the roots of
+    # the polynom P = -X^2 + X * time_limit - distance_record
+    delta = time_limit * time_limit - 4 * (-1) * (-distance_record)
+    root1 = (1/2) * (-time_limit - delta**0.5)
+    root2 = (1/2) * (-time_limit + delta**0.5)
+    min_valid_x = int(root1) + 1
+    max_valid_x = int(root2)
+    return max_valid_x - min_valid_x + 1
+
+
 def product(values: list[int]) -> int:
     """
     Return the product of all values in `values`.
@@ -102,11 +139,12 @@ if __name__ == "__main__":
     distances_str = data[1].split(":")[1].split()
     distances = list(map(int, distances_str))
 
-    part1 = product([n_ways_beat_record(t, d)
+    part1 = product([n_ways_beat_record_optimized(t, d)
                      for (t, d) in zip(times, distances)])
     print(f"Part 1: {part1}")
 
     time_single_race = int("".join(times_str))
     distance_single_race = int("".join(distances_str))
-    part2 = n_ways_beat_record(time_single_race, distance_single_race)
+    part2 = n_ways_beat_record_optimized(time_single_race,
+                                         distance_single_race)
     print(f"Part 2: {part2}")
