@@ -40,12 +40,20 @@ Python3 solution for the problem of Day 7 in Advent of Code 2023.
 # Sort the hands in ascending order to find the rank of each hand. The task is
 # to compute the product "bid" * "rank" for each hand, then find the total sum
 # of these products.
+#
+# Part 2
+# ======
+# This time, the letter "J" represents a "Joker". If there are one or more
+# "Joker" in a hand, we can treat them as any other card to "rank up" the type
+# of the poker hand (e.g. treat the J in AAAAJ as an A so the hand's type
+# becomes "Five of a kind"). Sort the hands in ascending order with this new
+# rule. The task is to find the sum of all "rank" * "bid" for each poker hand.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 import argparse
 from collections import Counter
 
 
-def get_hand_type(hand: str) -> int:
+def get_hand_type(hand: str, use_jokers: bool = False) -> int:
     """
     Return the type of the poker `hand`. The hand is a sequence of 5
     alphanumeric characters.
@@ -53,13 +61,28 @@ def get_hand_type(hand: str) -> int:
         Parameters:
             hand (str): The poker hand. It contains 5 cards (i.e. 5
                         characters).
+            use_jokers (bool): Indicate if we can treat "Joker" cards ("J") as
+                               any other cards to "rank up" the hand's type.
 
         Returns:
             hand_type (int): The type of the hand. It ranges from 7 (Five of a
                              kind) to 1 (High card).
     """
-    cards_count = [v for k, v in Counter(hand).items()]
-    cards_count.sort(reverse=True)  # reverse=True to have host common first
+    cards = Counter(hand)
+
+    # If allowed, treat the Jokers as the most frequent card.
+    if use_jokers and "J" in cards:
+        n_jokers = cards["J"]
+        if n_jokers == 5:  # special case (5 Jokers). Keep the hand as it is.
+            hand_type = 7  # 5 Jokers = Five of a kind
+            return hand_type
+
+        del cards["J"]
+        most_frequent_card, _ = cards.most_common()[0]
+        cards[most_frequent_card] += n_jokers
+
+    cards_count = list(cards.values())
+    cards_count.sort(reverse=True)  # reverse=True to have most common first
 
     if len(cards_count) == 1:    # Five of a kind
         hand_type = 7
@@ -86,7 +109,7 @@ def get_hand_type(hand: str) -> int:
     return hand_type
 
 
-def compute_hand_value(hand: str) -> tuple:
+def compute_hand_value(hand: str, use_jokers: bool = False) -> tuple:
     """
     Return a tuple that can be used to sort the poker hands. The tuple contains
     information about the hand type, and the value of each individual cards.
@@ -94,16 +117,24 @@ def compute_hand_value(hand: str) -> tuple:
         Parameters:
             hand (str): The poker hand. It contains 5 cards (i.e. 5
                         characters).
+            use_jokers (bool): Indicate if we can treat "Joker" cards ("J") as
+                               any other cards to "rank up" the hand's type.
+                               This changes the value of cards ("J" becomes
+                               weaker than "2").
 
         Returns:
             hand_value (tuple): A 6-tuple. It contains the hand type + the
                                 value of the 5 cards of the hand.
     """
-    cards = "AKQJT98765432"
-    card2value = {card: i for i, card in enumerate(cards[::-1])}
+    if use_jokers:
+        cards = "AKQT98765432J"
+        card2value = {card: i for i, card in enumerate(cards[::-1])}
+    else:
+        cards = "AKQJT98765432"
+        card2value = {card: i for i, card in enumerate(cards[::-1])}
 
     hand_value = (
-        get_hand_type(hand),
+        get_hand_type(hand, use_jokers),
         card2value[hand[0]],
         card2value[hand[1]],
         card2value[hand[2]],
@@ -127,8 +158,17 @@ if __name__ == "__main__":
     poker_hands = []
     for line in data:
         hand_str, bid = line.split()
-        poker_hands.append((compute_hand_value(hand_str), int(bid)))
-    poker_hands.sort()
+        poker_hands.append((compute_hand_value(hand_str, False), int(bid)))
+        poker_hands.sort()
 
     part1 = sum((rank+1) * hand[1] for rank, hand in enumerate(poker_hands))
     print(f"Part 1: {part1}")
+
+    poker_hands = []
+    for line in data:
+        hand_str, bid = line.split()
+        poker_hands.append((compute_hand_value(hand_str, True), int(bid)))
+        poker_hands.sort()
+
+    part2 = sum((rank+1) * hand[1] for rank, hand in enumerate(poker_hands))
+    print(f"Part 2: {part2}")
