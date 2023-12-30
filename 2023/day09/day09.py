@@ -31,7 +31,21 @@ Python3 solution for the problem of Day 9 in Advent of Code 2023.
 # additional numbers at the extreme right up until we add an additional number
 # at the extreme right of the original sequence. This new number is called "the
 # extrapolated next value". The task is to find the sum of the extrapolated
-# value for all lines.
+# values for all lines.
+#
+# Part 2
+# ======
+# Instead of adding an additional 0 at the extreme right of the sequence, add
+# it at the extreme left of the sequence. Since this new 0 represents the
+# difference between the first and the second numbers at the previous step of
+# the process, we can also add an additional number at the extreme left of the
+# sequence at the previous step to meet this difference condition. Iterating
+# backward, we can add additional numbers at the extreme left up until we add
+# an additional number at the extreme left of the original sequence (this is
+# VERY similar to Part 1, except that you now add new numbers at the extreme
+# left of the sequence instead of the extreme right). This new number is called
+# "the extrapolated previous value". The task is to find the sum of the
+# extrapolated previous values for all lines.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 import argparse
 
@@ -77,3 +91,35 @@ if __name__ == "__main__":
 
     part1 = sum(extrapolate_right(sequence) for sequence in data)
     print(f"Part 1: {part1}")
+
+    # Let's illustrate Part 2 with an example sequence. The
+    # sequence could look like:
+    #
+    #     a    b    c    d    (initial sequence)
+    #       b-a  c-b  d-c     (first step of differences)
+    #
+    # Then we add the additional values (X and Y) at the extreme left.
+    #
+    #    X    a     b      c      d
+    #       Y   b-a    c-b    d-c
+    #
+    # We have: a - X = Y. Therefore, X = a - Y.
+    # Let's do Part 1 on the same sequence, but reversed. We have:
+    #
+    #     d    c    b    a    (initial sequence but reversed)
+    #       c-d  b-c  a-b     (first step of differences)
+    #
+    # Then we add the additional values at the extreme right (Part 1).
+    #
+    #     d    c    b    a     Z
+    #       c-d  b-c  a-b   W
+    #
+    # We have: Z - a = W. So Z = a + W.
+    # Obviously, W = - Y (sequence is reversed, so each difference is the
+    # opposite of its corresponding one). So Z = a - Y. Which is the same as X
+    # because X = a - Y. So X = Z. In other words, to find the value of X
+    # (which is what we are looking for, the extrapolated previous value of the
+    # sequence), we simply have to compute the value Z, the extrapolated next
+    # value of the reversed sequence.
+    part2 = sum(extrapolate_right(sequence[::-1]) for sequence in data)
+    print(f"Part 2: {part2}")
